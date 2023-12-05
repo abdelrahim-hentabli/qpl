@@ -26,6 +26,8 @@ class hw_device final {
 
     using queues_container_t = std::array<hw_queue, max_working_queues>;
 
+    using opcfg_container_t  = std::array< std::array<uint32_t, TOTAL_OP_CFG_BIT_GROUPS> , max_working_queues>;
+
 public:
     using descriptor_t = void;
 
@@ -71,6 +73,7 @@ public:
 
 private:
     queues_container_t working_queues_   = {};    /**< Set of available HW working queues */
+    opcfg_container_t  op_configs_       = {};
     uint32_t           queue_count_      = 0u;    /**< Number of working queues that are available */
     uint64_t           gen_cap_register_ = 0u;    /**< GENCAP register content */
     uint64_t           iaa_cap_register_ = 0u;    /**< IAACAP register content */

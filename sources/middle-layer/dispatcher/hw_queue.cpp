@@ -175,5 +175,9 @@ auto hw_queue::is_operation_supported(uint32_t operation) const noexcept -> bool
 auto hw_queue::get_op_configuration_support() const noexcept -> bool {
     return op_cfg_enabled_;
 }
+
+auto hw_queue::get_op_config_by_index(uint32_t index) const noexcept -> uint32_t {
+    return op_cfg_register_[index];
+}
 }
 #endif //__linux__

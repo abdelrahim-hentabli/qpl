@@ -44,6 +44,8 @@ public:
 
     [[nodiscard]] auto get_op_configuration_support() const noexcept -> bool;
 
+    [[nodiscard]] auto get_op_config_by_index(uint32_t index) const noexcept -> uint32_t;
+
     void set_portal_ptr(void *portal_ptr) noexcept;
 
     virtual ~hw_queue() noexcept;
