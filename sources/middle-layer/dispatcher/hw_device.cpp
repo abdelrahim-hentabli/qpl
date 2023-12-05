@@ -64,8 +64,8 @@ auto hw_device::enqueue_descriptor(void *desc_ptr) const noexcept -> hw_accelera
     // TODO: order WQs by priority and engines capacity, check transfer sizes and other possible features
     for (uint64_t try_count = 0u; try_count < queue_count_; ++try_count) {
         hw_iaa_descriptor_set_block_on_fault((hw_descriptor *) desc_ptr, working_queues_[wq_idx].get_block_on_fault());
-        if ( !op_cfg_enabled_ &&
-            !working_queues_[wq_idx].is_operation_supported(hw_iaa_descriptor_get_operation((hw_descriptor *)desc_ptr))) {
+        if (!op_cfg_enabled_ |
+            working_queues_[wq_idx].is_operation_supported(hw_iaa_descriptor_get_operation((hw_descriptor *)desc_ptr))) {
             // For submitting when OPCFG is supported, logic is :
             //   If all WQs don't support operation, return HW_ACCELERATOR_NOT_SUPPORTED_BY_WQ
             //   If any WQ supports operation, but submission fails, then return HW_ACCELERATOR_WQ_IS_BUSY
@@ -205,7 +205,6 @@ auto hw_device::initialize_new_device(descriptor_t *device_descriptor_ptr) noexc
     queue_count_ = std::distance(working_queues_.begin(), wq_it);
 
     if (queue_count_ > 1) {
-        op_cfg_enabled_ = working_queues_[0].get_op_configuration_support();
         auto begin = working_queues_.begin();
         auto end   = begin + queue_count_;
 
@@ -217,6 +216,7 @@ auto hw_device::initialize_new_device(descriptor_t *device_descriptor_ptr) noexc
     if (queue_count_ == 0) {
         return HW_ACCELERATOR_WORK_QUEUES_NOT_AVAILABLE;
     }
+    op_cfg_enabled_ = working_queues_[0].get_op_configuration_support();
 
     return HW_ACCELERATOR_STATUS_OK;
 }
