@@ -55,7 +55,6 @@ private:
     mutable void                  *portal_ptr_    = nullptr;
     mutable std::atomic<uint64_t> portal_offset_  = 0u;               /**< Portal for enqcmd (mod page size)*/
     bool                          op_cfg_enabled_ = false;
-
     uint32_t                      op_cfg_register_[TOTAL_OP_CFG_BIT_GROUPS]  =
                                     {0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u}; /**< OPCFG register content */
 };

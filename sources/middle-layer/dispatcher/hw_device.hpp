@@ -77,6 +77,7 @@ private:
     uint64_t           numa_node_id_     = 0u;    /**< NUMA node id of the device */
     uint32_t           version_major_    = 0u;    /**< Major version of discovered device */
     uint32_t           version_minor_    = 0u;    /**< Minor version of discovered device */
+    bool               op_cfg_enabled_   = false; /**< OPCFG support - OPCFG support for any work queue */
 };
 
 #endif
