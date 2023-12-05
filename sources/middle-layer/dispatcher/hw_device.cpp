@@ -65,7 +65,8 @@ auto hw_device::enqueue_descriptor(void *desc_ptr) const noexcept -> hw_accelera
     // TODO: order WQs by priority and engines capacity, check transfer sizes and other possible features
     for (uint64_t try_count = 0u; try_count < queue_count_; ++try_count) {
         hw_iaa_descriptor_set_block_on_fault((hw_descriptor *) desc_ptr, working_queues_[wq_idx].get_block_on_fault());
-        if ( !check_wq_opcfg_ ) {
+        if ( !check_wq_opcfg_ || true ||
+             working_queues_[wq_idx].is_operation_supported(operation)) {
             // For submitting when OPCFG is supported, logic is :
             //   If all WQs don't support operation, return HW_ACCELERATOR_NOT_SUPPORTED_BY_WQ
             //   If any WQ supports operation, but submission fails, then return HW_ACCELERATOR_WQ_IS_BUSY
