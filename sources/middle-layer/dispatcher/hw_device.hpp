@@ -71,6 +71,8 @@ public:
 
     [[nodiscard]] auto get_dict_compress_support() const noexcept -> bool;
 
+    [[nodiscard]] auto get_operation_supported_on_wq(const uint32_t wq_idx, const uint32_t operation) const noexcept -> bool;
+
 private:
     queues_container_t working_queues_   = {};    /**< Set of available HW working queues */
     opcfg_container_t  op_configs_       = {};
@@ -80,7 +82,7 @@ private:
     uint64_t           numa_node_id_     = 0u;    /**< NUMA node id of the device */
     uint32_t           version_major_    = 0u;    /**< Major version of discovered device */
     uint32_t           version_minor_    = 0u;    /**< Minor version of discovered device */
-    bool               check_wq_opcfg_   = false; /**< Need to check workqueue's OPCFG register */
+    bool               op_cfg_enabled_   = false; /**< Need to check workqueue's OPCFG register */
 };
 
 #endif

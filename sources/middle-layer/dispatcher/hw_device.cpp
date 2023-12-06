@@ -65,8 +65,8 @@ auto hw_device::enqueue_descriptor(void *desc_ptr) const noexcept -> hw_accelera
     // TODO: order WQs by priority and engines capacity, check transfer sizes and other possible features
     for (uint64_t try_count = 0u; try_count < queue_count_; ++try_count) {
         hw_iaa_descriptor_set_block_on_fault((hw_descriptor *) desc_ptr, working_queues_[wq_idx].get_block_on_fault());
-        if ( !check_wq_opcfg_ ||
-             OC_GET_OP_SUPPORTED(op_configs_[wq_idx], operation) ){
+        // If OPCFG functionality exists, check OPCFG register before submitting, otherwise try submission
+        if ( !op_cfg_enabled_ || get_operation_supported_on_wq(wq_idx, operation)){
             // For submitting when OPCFG is supported, logic is :
             //   If all WQs don't support operation, return HW_ACCELERATOR_NOT_SUPPORTED_BY_WQ
             //   If any WQ supports operation, but submission fails, then return HW_ACCELERATOR_WQ_IS_BUSY
@@ -132,6 +132,10 @@ auto hw_device::get_header_gen_support() const noexcept -> bool {
 
 auto hw_device::get_dict_compress_support() const noexcept -> bool {
     return IC_DICT_COMP(iaa_cap_register_);
+}
+
+auto hw_device::get_operation_supported_on_wq(const uint32_t wq_idx, const uint32_t operation) const noexcept -> bool {
+    return OC_GET_OP_SUPPORTED(op_configs_[wq_idx], operation);
 }
 
 auto hw_device::initialize_new_device(descriptor_t *device_descriptor_ptr) noexcept -> hw_accelerator_status {
@@ -218,14 +222,15 @@ auto hw_device::initialize_new_device(descriptor_t *device_descriptor_ptr) noexc
         return HW_ACCELERATOR_WORK_QUEUES_NOT_AVAILABLE;
     }
 
-    // Logic for check_wq_opcfg_ value
-    check_wq_opcfg_ = working_queues_[0].get_op_configuration_support();
+    // Logic for op_cfg_enabled_ value
+    op_cfg_enabled_ = working_queues_[0].get_op_configuration_support();
 
     for(uint32_t wq_idx = 0; wq_idx < queue_count_; wq_idx++){
-        for (uint32_t i = 0 ; i < TOTAL_OP_CFG_BIT_GROUPS; i++){
-            op_configs_[wq_idx][i] = working_queues_[wq_idx].get_op_config_by_index(i);
+        for (uint32_t register_index = 0 ; register_index < TOTAL_OP_CFG_BIT_GROUPS; register_index++){
+            op_configs_[wq_idx] = working_queues_[wq_idx].get_op_config_register();
         }
     }
+
 
     return HW_ACCELERATOR_STATUS_OK;
 }
