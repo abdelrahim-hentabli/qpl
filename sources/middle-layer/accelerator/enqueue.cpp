@@ -29,7 +29,7 @@ extern "C" hw_accelerator_status hw_enqueue_descriptor(void* desc_ptr, int32_t u
 
         if (!device.is_matching_user_numa_policy(user_specified_numa_id)) { continue; }
 
-        hw_iaa_descriptor_hint_cpu_cache_as_destination((hw_descriptor*)desc_ptr, device.get_cache_write_available());
+        hw_iaa_descriptor_hint_cpu_cache_as_destination((hw_descriptor*)desc_ptr, false);
 
         const hw_accelerator_status enqueue_result = device.enqueue_descriptor(desc_ptr);
         if (enqueue_result == HW_ACCELERATOR_NOT_SUPPORTED_BY_WQ &&
